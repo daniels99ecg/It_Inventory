@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model employee {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  nameEmployee String
+  email        String       @unique
+  laptopId     String?      @db.ObjectId
+  laptop       laptop?      @relation(fields: [laptopId], references: [id])
+  display      display?     @relation(fields: [displayId], references: [id])
+  displayId    String?      @db.ObjectId
+  peripheralId String[]     @db.ObjectId
+  peripheral   peripheral[] @relation(fields: [peripheralId], references: [id])
+}
+
+model laptop {
+  id       String     @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  employee employee[]
+}
+
+model display {
+  id       String     @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  employee employee[]
+}
+
+model peripheral {
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  employeeId String[]   @db.ObjectId
+  employee   employee[] @relation(fields: [employeeId], references: [id])
+}
+
+model authUser {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  email    String   @unique
+  password String
+  fullName String
+  isActive Boolean? @default(true)
+}
